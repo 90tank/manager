@@ -1,0 +1,68 @@
+Windows Ubuntu  （WSL） 安装mysql 和 redis 
+
+note ； 要修改镜像，否则安装可能失败，除非已翻墙；
+
+
+安装
+sudo apt-get install mysql-server
+---mySql  密码修改-----
+
+
+update user set authentication_string='99oXw8qNvKLjMABQ' where user='root';
+select authentication_string from user where user='root';
+
+
+// 修改配置 先跳过验证 登陆进去 最后再改回来
+sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf 
+#skip-grant-tables
+
+// 先设置一个空密码
+UPDATE mysql.user SET authentication_string='' WHERE user='root' and host='localhost';
+flush privileges;
+
+//---------------------------------------------设置加密的密码---------------------------------------------
+//以caching_sha2_password加密密码并设置
+ALTER user 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY 'root';
+
+
+// 查看设置的密码
+select host,user,plugin,authentication_string from mysql.user;
+
+
+// 修改加密方式
+ALTER user 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
+
+// 开启root远程访问权限
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'IDENTIFIED BY 'root' WITH GRANT OPTION;
+flush privileges;
+
+
+
+
+Redis 安装 （https://cloud.tencent.com/developer/article/1639658）
+
+sudo apt update
+sudo apt install redis-server
+
+# 启动Redis 
+sudo service redis-server start
+sudo service redis-server status
+
+
+终端输入
+redis-cli 进入redis 客户端
+
+Test :
+SET zykey 1990
+GET zykey
+EXPIRR zy 10  // 设置10秒后消失
+
+GET zykey ; // 10s 后招不到
+
+
+
+
+
+
+
+
