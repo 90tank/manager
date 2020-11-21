@@ -1,6 +1,6 @@
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.bode.docsys.entity
+  type-aliases-package: com.docsys.manager.entity
   #全局配置
   configuration:
     map-underscore-to-camel-case: true

@@ -7,12 +7,13 @@ import com.docsys.manager.entity.User;
 import com.docsys.manager.mapper.UserMapper;
 import com.docsys.manager.service.UserService;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Mapper
+    @Autowired
     UserMapper userMapper;
 
     @Override

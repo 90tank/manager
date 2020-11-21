@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
-
+import com.alibaba.fastjson.JSONObject;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 
@@ -28,7 +28,10 @@ public class LoginController {
     private int redisExpireTime;
 
     @PostMapping("/login")
-    public Result login(@RequestParam String username, @RequestParam String password){
+    public Result login(@RequestBody JSONObject requestJson){
+        String username = requestJson.getString("username");
+        String password = requestJson.getString("password");
+
         User user=userService.getUserByPass(username, password);
         Assert.notNull(user,"用户名或密码错误");
         long currentTimeMillis = System.currentTimeMillis();
@@ -49,6 +52,12 @@ public class LoginController {
         String username=JWTUtil.getUsername(token);
         redisUtil.del(username);
         return Result.succ(null);
+    }
+
+    @PostMapping("/testdemo")
+    @RequiresAuthentication
+    public void testdemo() {
+        System.out.println("tttttt---->>>>>>>>");
     }
 }
 

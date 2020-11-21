@@ -2,7 +2,8 @@ package com.docsys.manager.shiro;
 
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.docsys.manager.domain.User;
+
+import com.docsys.manager.entity.User;
 import com.docsys.manager.jwt.JWTUtil;
 import com.docsys.manager.redis.RedisUtil;
 import com.docsys.manager.service.UserService;
@@ -39,12 +40,14 @@ public class MyRealm extends AuthorizingRealm {
         System.out.println("授权~~~~~");
         String token=principals.toString();
         String username= JWTUtil.getUsername(token);
+
+        // 这里去进行这个用户的权限查询
         User user=userService.getUser(username);
         SimpleAuthorizationInfo info=new SimpleAuthorizationInfo();
         //查询数据库来获取用户的角色
-        info.addRole(user.getRoles());
+        //info.addRole(user.getRoles());
         //查询数据库来获取用户的权限
-        info.addStringPermission(user.getPermission());
+        //info.addStringPermission(user.getPermission());
         return info;
     }
 
@@ -69,12 +72,16 @@ public class MyRealm extends AuthorizingRealm {
         if (user==null){
             throw new AuthenticationException("该用户不存在");
         }
-        //开始认证，只要AccessToken没有过期，或者refreshToken的时间节点和AccessToken一致即可
+        //开始
+        //
+        //
+        //
+        // 认证，只要AccessToken没有过期，或者refreshToken的时间节点和AccessToken一致即可
         if (redisUtil.hasKey(username)){
             //判断AccessToken有无过期
             if (!JWTUtil.verify(jwt)){
                 throw new TokenExpiredException("token认证失效，token过期，重新登陆");
-            }else {
+            } else {
                 //判断AccessToken和refreshToken的时间节点是否一致
                 long current= (long) redisUtil.get(username);
                 if (current== JWTUtil.getExpire(jwt)){
@@ -83,7 +90,7 @@ public class MyRealm extends AuthorizingRealm {
                     throw new AuthenticationException("token已经失效，请重新登录！");
                 }
             }
-        }else{
+        } else {
             throw new AuthenticationException("token过期或者Token错误！！");
         }
     }

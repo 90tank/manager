@@ -51,18 +51,14 @@ public class ShiroConfig {
         factoryBean.setFilters(filterMap);
 
         // 设置无权限时跳转的 url;
-        factoryBean.setLoginUrl("/unauthenticated");     // 跳转到登录界面
+        factoryBean.setLoginUrl("/login");     // 跳转到登录界面
         factoryBean.setUnauthorizedUrl("/unauthorized"); // 跳转到认证失败界面
 
-
-        Map<String,String>filterRuleMap=new HashMap<>();
+        Map<String,String> filterRuleMap = new HashMap<>();
         // 所有请求通过我们自己的JWT Filter
 
-        // 访问 /unauthorized/** 不通过JWTFilter
-
-        filterRuleMap.put("/unauthorized/**","anon");
         filterRuleMap.put("/login", "anon");
-
+        filterRuleMap.put("/unauthorized", "anon");
         filterRuleMap.put("/logout", "logout");
         filterRuleMap.put("/**", "jwt");
 

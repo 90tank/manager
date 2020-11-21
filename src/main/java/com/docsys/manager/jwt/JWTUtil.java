@@ -6,6 +6,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class JWTUtil {
 
@@ -45,7 +47,7 @@ public class JWTUtil {
                     .withIssuedAt(new Date())//签发时间
                     .sign(Algorithm.HMAC256(SECRET));
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            log.error("UnsupportedEncodingException");
         }
         return token;
     }
@@ -58,6 +60,7 @@ public class JWTUtil {
             verifier.verify(token);
             return true;
         }catch (Exception e){
+            log.info("verify return false");
             return false;
         }
     }
@@ -67,6 +70,7 @@ public class JWTUtil {
             DecodedJWT jwt = JWT.decode(token);
             return jwt.getClaim("username").asString();
         } catch (JWTDecodeException e) {
+            log.info("get username from token failed!");
             return null;
         }
     }
@@ -77,6 +81,7 @@ public class JWTUtil {
             DecodedJWT jwt = JWT.decode(token);
             return jwt.getClaim("current").asLong();
         }catch (Exception e){
+            log.info("get expire failed");
             return null;
         }
     }
