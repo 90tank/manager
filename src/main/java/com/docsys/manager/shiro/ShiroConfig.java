@@ -41,25 +41,31 @@ public class ShiroConfig {
      */
     @Bean
     public ShiroFilterFactoryBean factory(@Qualifier("securityManager")DefaultWebSecurityManager securityManager){
-        ShiroFilterFactoryBean factoryBean=new ShiroFilterFactoryBean();
+        ShiroFilterFactoryBean factoryBean = new ShiroFilterFactoryBean();
         factoryBean.setSecurityManager(securityManager);
         // 添加自己的过滤器并且取名为jwt
         Map<String, Filter> filterMap=new LinkedHashMap<>();
 
-
-        //设置我们自定义的JWT过滤器
+        // 设置我们自定义的JWT过滤器
         filterMap.put("jwt",new JWTFilter());
-
-
         factoryBean.setFilters(filterMap);
 
         // 设置无权限时跳转的 url;
-        factoryBean.setUnauthorizedUrl("/unauthorized/无权限");
+        factoryBean.setLoginUrl("/unauthenticated");     // 跳转到登录界面
+        factoryBean.setUnauthorizedUrl("/unauthorized"); // 跳转到认证失败界面
+
+
         Map<String,String>filterRuleMap=new HashMap<>();
         // 所有请求通过我们自己的JWT Filter
-        filterRuleMap.put("/**","jwt");
+
         // 访问 /unauthorized/** 不通过JWTFilter
+
         filterRuleMap.put("/unauthorized/**","anon");
+        filterRuleMap.put("/login", "anon");
+
+        filterRuleMap.put("/logout", "logout");
+        filterRuleMap.put("/**", "jwt");
+
         factoryBean.setFilterChainDefinitionMap(filterRuleMap);
         return factoryBean;
     }

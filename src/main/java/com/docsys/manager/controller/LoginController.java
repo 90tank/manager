@@ -2,12 +2,14 @@ package com.docsys.manager.controller;
 
 
 import com.docsys.manager.common.Result;
-import com.docsys.manager.domain.User;
+
+import com.docsys.manager.entity.User;
 import com.docsys.manager.jwt.JWTUtil;
 import com.docsys.manager.redis.RedisUtil;
 import com.docsys.manager.service.UserService;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,13 +24,16 @@ public class LoginController {
     @Autowired
     private RedisUtil redisUtil;
 
+    @Value("${token.redisExpireTime}")
+    private int redisExpireTime;
+
     @PostMapping("/login")
     public Result login(@RequestParam String username, @RequestParam String password){
         User user=userService.getUserByPass(username, password);
         Assert.notNull(user,"用户名或密码错误");
         long currentTimeMillis = System.currentTimeMillis();
-        String token= JWTUtil.createToken(user.getUsername(),currentTimeMillis);
-        redisUtil.set(username,currentTimeMillis,60*30);
+        String token= JWTUtil.createToken(user.getUserName(),currentTimeMillis);
+        redisUtil.set(username,currentTimeMillis,redisExpireTime);
         return Result.succ(200,"登陆成功",token);
     }
 
