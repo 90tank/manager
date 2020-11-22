@@ -8,14 +8,16 @@ import lombok.Data;
 // Ps ： 建数据库的时候最好遵循mybatis plus 的规范，
 // 则不用关注 @Table @TableField @TableId
 @Data
-@TableName(value = "sys_user")
+@TableName(value = "t_sys_user")
 public class User {
     @TableId("id")
     String id;
-    @TableField("username")
+    @TableField("user_name_pn")
     String userName;
     @TableField("password")
     String password;
+    @TableField("real_name")
+    String realName;
     @TableField("role_id")
     String roleId;
     @TableField("delete_status")

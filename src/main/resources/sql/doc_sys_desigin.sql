@@ -1,8 +1,8 @@
 CREATE TABLE `t_sys_user` (
 `user_id` int(11) NOT NULL COMMENT '用户Id主键',
-`user_name` varchar(255) NOT NULL COMMENT '系统管理员用户名(手机号码)',
+`user_name_pn` varchar(255) NOT NULL COMMENT '系统管理员用户名(手机号码)',
 `password` varchar(25) NOT NULL COMMENT '系统管理员密码',
-`phone_num` varchar(20) NOT NULL COMMENT '手机号码',
+`real_name` varchar(20) NOT NULL COMMENT '真实名称',
 `create_time` timestamp NOT NULL COMMENT '创建时间',
 `update_time` timestamp NULL COMMENT '更新时间',
 `delete_status` tinyint(10) NULL DEFAULT 1 COMMENT '是否有效',
