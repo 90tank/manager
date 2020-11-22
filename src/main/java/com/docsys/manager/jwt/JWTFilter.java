@@ -1,11 +1,15 @@
 package com.docsys.manager.jwt;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.docsys.manager.common.Result;
+import com.docsys.manager.exception.CustomException;
 import com.docsys.manager.redis.RedisUtil;
 import com.docsys.manager.token.JWTToken;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
+import org.apache.shiro.web.util.WebUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.WebApplicationContext;
@@ -16,6 +20,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URLEncoder;
 
 
@@ -41,7 +46,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
                  * */
                 String msg=e.getMessage();
                 Throwable cause = e.getCause();
-                if (cause!=null&&cause instanceof TokenExpiredException){
+                if (cause!=null&&cause instanceof TokenExpiredException) {
                     System.out.println("刷新token");
                     //AccessToken过期，尝试去刷新token
                     String result=refreshToken(request, response);
@@ -52,13 +57,28 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
                     msg=result;
                 } else {
                     // 这里是认证失败的情况 错误的Token 或者 redis 中已经不存在对应的key
-                    msg = "错误的Token或缓存中已无此key ";
-                    responseError(response,msg);
+                    msg = "错误的Token, 或缓存中已无此key ";
+                    this.response401(response,msg);
+//                    responseError(response,msg);
                 }
 
             }
+        } else {
+            // 没有携带Token
+            HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
+            // 获取当前请求类型
+            String httpMethod = httpServletRequest.getMethod();
+            // 获取当前请求URI
+            String requestURI = httpServletRequest.getRequestURI();
+            log.info("当前请求 {} Authorization属性(Token)为空 请求类型 {}", requestURI, httpMethod);
+            // mustLoginFlag = true 开启任何请求必须登录才可访问
+            final Boolean mustLoginFlag = true;
+            if (mustLoginFlag) {
+                this.response401(response, "请先登录");
+                return false;
+            }
         }
-        //如果请求头不存在 Token，则可能是执行登陆操作或者是游客状态访问，无需检查 token，直接返回 true
+
         return true;
     }
 
@@ -181,6 +201,25 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
             }
         }
         return "token认证失效，token过期，重新登陆";
+    }
+
+    /**
+     * 无需转发，直接返回Response信息
+     */
+    private void response401(ServletResponse response, String msg) {
+        HttpServletResponse httpServletResponse = WebUtils.toHttp(response);
+        httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+        httpServletResponse.setCharacterEncoding("UTF-8");
+        httpServletResponse.setContentType("application/json; charset=utf-8");
+        try (PrintWriter out = httpServletResponse.getWriter()) {
+
+            Result result = Result.fail(HttpStatus.UNAUTHORIZED.value(), "无权访问(Unauthorized):" + msg, null);
+            String data = JSONObject.toJSONString(result);
+            out.append(data);
+        } catch (IOException e) {
+            log.error("直接返回Response信息出现IOException异常:{}", e.getMessage());
+            throw new CustomException("直接返回Response信息出现IOException异常:" + e.getMessage());
+        }
     }
 }
 
