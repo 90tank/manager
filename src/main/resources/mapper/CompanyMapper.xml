@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docsys.manager.dao.CompanyMapper">
+  
+  <select id="getCompanyInfos" resultType="java.util.Map">
+   
+   SELECT 
+    ID id,
+    COMPANY_NAME companyName,
+   	COMPANY_TYPE companyType,
+    COMPANY_ADDR companyAddr,
+    COMPANY_BUSINESS companyBussiness,
+    USER_NAME userName,
+    PASSWORD passWord,
+    COMPANY_LOGO companyLogo,
+    REGISTERED_CAPITAL registeredCaptal,
+    REGISTERED_TIME registeredTime,
+    COMPANY_SIZE companySize,
+    CREATE_TIME createTime,
+    CREATER creater,
+    COMMON_SEAL commonSeal,
+    MARK mark
+   
+   FROM T_COMPANY_INFO where 1=1 
+    <if test="id !='' and id !=null">
+                and ID =#{id}
+    </if>
+    <if test="companyName !='' and companyName !=null">
+                and COMPANY_NAME =#{companyName}
+    </if>
+    <if test="userName !='' and userName !=null">
+                and USER_NAME =#{userName}
+    </if>
+    <if test="passWord !='' and passWord != null">
+                and PASSWORD =#{passWord}
+    </if>
+     ORDER BY ID DESC
+  </select>
+  
+  
+  <update id = "modify" parameterType="java.util.Map">
+	  	UPDATE t_region_dic t  set t.COUNTRY = #{country} ,  t.PROVINCE = #{province} ,  t.CITY = #{city} 
+			,  t.DISTRICT = #{dis}	
+			where KeyId=#{id}		 
+  </update>	
+  
+    <select id = "getdic" resultType="java.util.Map">
+	  	 select * from  t_region_dic  
+						 
+  </select>					 
+  
+  
+</mapper>
