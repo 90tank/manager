@@ -1,10 +1,11 @@
 package com.docsys.manager.jwt;
 
-
 import com.alibaba.fastjson.JSONObject;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.docsys.manager.common.Result;
 import com.docsys.manager.exception.CustomException;
+import com.docsys.manager.exception.CustomTokenExpireException;
 import com.docsys.manager.redis.RedisUtil;
 import com.docsys.manager.token.JWTToken;
 import lombok.extern.slf4j.Slf4j;
@@ -38,30 +39,35 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
             try {
                 executeLogin(request, response);
                 return true;
-
             } catch (Exception e) {
                 /*
                  *注意这里捕获的异常其实是在Realm抛出的，但是由于executeLogin（）方法抛出的异常是从login（）来的，
                  * login抛出的异常类型是AuthenticationException，所以要去获取它的子类异常才能获取到我们在Realm抛出的异常类型。
                  * */
-                String msg=e.getMessage();
-                Throwable cause = e.getCause();
-                if (cause!=null&&cause instanceof TokenExpiredException) {
-                    System.out.println("刷新token");
-                    //AccessToken过期，尝试去刷新token
-                    String result=refreshToken(request, response);
-                    if (result.equals("success")){
-                        System.out.println("request.equals(\"success\")");
+                // 认证出现异常，传递错误信息msg
+                String msg = e.getMessage();
+                // 获取应用异常(该Cause是导致抛出此throwable(异常)的throwable(异常))
+                Throwable throwable = e.getCause();
+                if (throwable instanceof SignatureVerificationException) {
+                    // 该异常为JWT的AccessToken认证失败(Token或者密钥不正确)
+                    msg = "Token或者密钥不正确(" + throwable.getMessage() + ")";
+                } else if (throwable instanceof TokenExpiredException) {
+                    // 该异常为JWT的AccessToken已过期，判断RefreshToken未过期就进行AccessToken刷新
+                    if (this.refreshToken(request, response)) {
                         return true;
+                    } else {
+                        msg = "Token已过期(" + throwable.getMessage() + ")";
                     }
-                    msg=result;
                 } else {
-                    // 这里是认证失败的情况 错误的Token 或者 redis 中已经不存在对应的key
-                    msg = "错误的Token, 或缓存中已无此key ";
-                    this.response401(response,msg);
-//                    responseError(response,msg);
+                    // 应用异常不为空
+                    if (throwable != null) {
+                        // 获取应用异常msg
+                        msg = throwable.getMessage();
+                    }
                 }
-
+                // Token认证失败直接返回Response信息
+                this.response401(response, msg);
+                return false;
             }
         } else {
             // 没有携带Token
@@ -164,7 +170,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     }
 
     //刷新token
-    private String refreshToken(ServletRequest request,ServletResponse response) {
+    private boolean refreshToken(ServletRequest request,ServletResponse response) {
         System.out.println("refreshToken");
 
         HttpServletRequest req= (HttpServletRequest) request;
@@ -194,13 +200,13 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
                     HttpServletResponse httpServletResponse = (HttpServletResponse) response;
                     httpServletResponse.setHeader("Authorization", token);
                     httpServletResponse.setHeader("Access-Control-Expose-Headers", "Authorization");
-                    return "success";
+                    return true;
                 }catch (Exception e){
-                    return e.getMessage();
+                    return false;
                 }
             }
         }
-        return "token认证失效，token过期，重新登陆";
+        return false;
     }
 
     /**

@@ -56,7 +56,10 @@ public class LoginController {
 
     @PostMapping("/testdemo")
     @RequiresAuthentication
+    //@RequiresAuthentication // 加上处理逻辑没有问题，如果不加,经过过滤器处理后 方法内部的逻辑还是会被执行
+    // 所以，在使用的时候，对需要经过认证才能做得操作，一定加上 @RequiresAuthentication
     public void testdemo() {
+        System.out.println("hahahaha");
         System.out.println("tttttt---->>>>>>>>");
     }
 }

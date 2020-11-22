@@ -4,6 +4,7 @@ package com.docsys.manager.shiro;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 
 import com.docsys.manager.entity.User;
+import com.docsys.manager.exception.CustomTokenExpireException;
 import com.docsys.manager.jwt.JWTUtil;
 import com.docsys.manager.redis.RedisUtil;
 import com.docsys.manager.service.UserService;
@@ -72,15 +73,14 @@ public class MyRealm extends AuthorizingRealm {
         if (user==null){
             throw new AuthenticationException("该用户不存在");
         }
-        //开始
-        //
-        //
-        //
-        // 认证，只要AccessToken没有过期，或者refreshToken的时间节点和AccessToken一致即可
+        //开始认证，只要AccessToken没有过期，或者refreshToken的时间节点和AccessToken一致即可
         if (redisUtil.hasKey(username)){
             //判断AccessToken有无过期
             if (!JWTUtil.verify(jwt)){
+                System.out.println("TokenExpiredException !");
+                // 这里抛出的 TokenExpiredException 异常会打印 ，但是其他地方throw的不打印 ，why ?
                 throw new TokenExpiredException("token认证失效，token过期，重新登陆");
+//                throw new CustomTokenExpireException("token认证失效，token过期，重新登陆");
             } else {
                 //判断AccessToken和refreshToken的时间节点是否一致
                 long current= (long) redisUtil.get(username);

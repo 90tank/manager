@@ -24,6 +24,7 @@ public class GlobalExceptionHandle {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(ShiroException.class)
     public Result handle401(ShiroException e) {
+        System.out.println("1.________________>----------->"+e.getMessage());
         return Result.fail(401, e.getMessage(), null);
     }
 
@@ -31,7 +32,7 @@ public class GlobalExceptionHandle {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(UnauthenticatedException.class)
     public Result handle401(UnauthenticatedException e) {
-        System.out.println(e.getMessage());
+        System.out.println("2.________________>----------->"+e.getMessage());
         return Result.fail(401, "你还没有登录", null);
     }
 
@@ -39,7 +40,7 @@ public class GlobalExceptionHandle {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(UnauthorizedException.class)
     public Result handle401(UnauthorizedException e) {
-        System.out.println(e.getMessage());
+        System.out.println("3.________________>----------->"+e.getMessage());
         return Result.fail(401, "你没有权限访问"+e.getMessage(), null);
     }
 
@@ -51,6 +52,7 @@ public class GlobalExceptionHandle {
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public Result handler(MethodArgumentNotValidException e) throws IOException {
 //        log.error("运行时异常:-------------->",e);
+        System.out.println("4.--->");
         BindingResult bindingResult = e.getBindingResult();
         //这一步是把异常的信息最简化
         ObjectError objectError = bindingResult.getAllErrors().stream().findFirst().get();
@@ -64,6 +66,7 @@ public class GlobalExceptionHandle {
     @ExceptionHandler(value = IllegalArgumentException.class)
     public Result handler(IllegalArgumentException e) throws IOException {
 //        log.error("Assert异常:-------------->{}",e.getMessage());
+        System.out.println("5.----->");
         return Result.fail(400,e.getMessage(),null);
     }
 
@@ -72,6 +75,7 @@ public class GlobalExceptionHandle {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = RuntimeException.class)
     public Result handle(RuntimeException e){
+        System.out.println("6.---->");
         return Result.fail(HttpStatus.BAD_REQUEST.value(),e.getMessage(),null);
     }
 
@@ -79,6 +83,8 @@ public class GlobalExceptionHandle {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = TokenExpiredException.class)
     public Result handler(TokenExpiredException e) throws IOException {
+
+        System.out.println("7. TokenExpiredException________________>----------->"+e.getMessage());
         return Result.fail(HttpStatus.BAD_REQUEST.value(),"token已经过期，请重新登录",null);
     }
 }
