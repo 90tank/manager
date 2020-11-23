@@ -1,8 +1,8 @@
 package com.docsys.manager.controller;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.docsys.manager.common.Result;
-
 import com.docsys.manager.entity.User;
 import com.docsys.manager.jwt.JWTUtil;
 import com.docsys.manager.redis.RedisUtil;
@@ -11,11 +11,13 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import com.alibaba.fastjson.JSONObject;
-import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Random;
+
+@RequestMapping("/login")
 @RestController
 public class LoginController {
 
@@ -27,7 +29,10 @@ public class LoginController {
     @Value("${token.redisExpireTime}")
     private int redisExpireTime;
 
-    @PostMapping("/login")
+    @Value("${vcode.redisExpireTime}")
+    private int vcodeRedisExpireTime;
+
+    @PostMapping("/get/token")
     public Result login(@RequestBody JSONObject requestJson){
         String username = requestJson.getString("username");
         String password = requestJson.getString("password");
@@ -40,12 +45,9 @@ public class LoginController {
         return Result.succ(200,"登陆成功",token);
     }
 
-    @RequestMapping(path = "/unauthorized/{message}")
-    public Result unauthorized(@PathVariable String message) throws UnsupportedEncodingException {
-        return Result.fail(message);
-    }
 
-    @DeleteMapping("/logout")
+
+    @DeleteMapping("/delete/token")
     @RequiresAuthentication
     public Result logout(HttpServletRequest request){
         String token=request.getHeader("Authorization");
@@ -62,5 +64,34 @@ public class LoginController {
         System.out.println("hahahaha");
         System.out.println("tttttt---->>>>>>>>");
     }
+
+    @PostMapping("/vcode/send/")
+    public void sendVerifyCodeToUser(@RequestBody JSONObject requestJson) {
+        String userPhoneNum = requestJson.getString("username");
+
+        Random random = new Random();
+        String code  = String.format("%04d",new Random().nextInt(9999));
+        //todo send msg userPhoneNum
+        redisUtil.set(userPhoneNum, code,vcodeRedisExpireTime);
+    }
+
+    @PostMapping("/vcode/check/")
+    public Result checkUserVerifyCode(@RequestBody JSONObject requestJson) {
+        String userPhoneNum = requestJson.getString("username");
+        String vcode = requestJson.getString("vcode");
+
+        String codeInRedis = (String)redisUtil.get(userPhoneNum);
+
+        if (StringUtils.isEmpty(codeInRedis)) {
+            return Result.fail("verification failed， timeout!");
+        }
+        if (!vcode.equals(codeInRedis)) {
+            return Result.fail("verification failed,  not same! ");
+        }
+
+        return Result.succ("verification success!");
+    }
+
+
 }
 

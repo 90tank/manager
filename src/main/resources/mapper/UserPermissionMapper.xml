@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docsys.manager.dao.CompanyMapper">
+
+    <select id = "getPermissionsByUserId" resultType="java.util.List">
+-- 	  	 	 todo 写一个联合查询
+    </select>
+
+    <select id = "getMenusByUserId" resultType="java.util.List">
+-- 	  	 	 todo 写一个联合查询
+    </select>
+</mapper>

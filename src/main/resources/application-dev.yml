@@ -72,3 +72,6 @@ token:
   # 30*60s
   redisExpireTime: 1800
   expireTime: 300
+
+vcode:
+  redisExpireTime: 60
