@@ -60,6 +60,7 @@ public class ShiroConfig {
         filterRuleMap.put("/login", "anon");
         filterRuleMap.put("/unauthorized", "anon");
         filterRuleMap.put("/logout", "logout");
+        filterRuleMap.put("/**", "authc"); // 配置所有的请求都要经过鉴权  （todo: 测试加上这个，是不是testdemo 就不用添加@RequiresAuthentication注解）
         filterRuleMap.put("/**", "jwt");
 
         factoryBean.setFilterChainDefinitionMap(filterRuleMap);

@@ -10,9 +10,9 @@ import lombok.Data;
 @Data
 @TableName(value = "t_sys_user")
 public class User {
-    @TableId("id")
+    @TableId("user_id")
     String id;
-    @TableField("user_name_pn")
+    @TableField("user_name_pn") // 登录用户名 （即手机号）
     String userName;
     @TableField("password")
     String password;
