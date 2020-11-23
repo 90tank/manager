@@ -2,6 +2,7 @@ package com.docsys.manager.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.docsys.manager.common.Result;
+import com.docsys.manager.entity.Permission;
 import com.docsys.manager.entity.User;
 import com.docsys.manager.mapper.UserMapper;
 import com.docsys.manager.service.UserService;
@@ -78,16 +79,16 @@ public class SysUserController {
     @PostMapping("/get/permissions")
     @RequiresAuthentication
     public Result getUserPermissions(@RequestBody JSONObject requestJson) {
-        String userId = requestJson.getString("userId");
-        List<String> permissions = userService.getPermissions();
+        int userId = requestJson.getInteger("userId");
+        List<Permission> permissions = userService.getPermissions(userId);
         return Result.succ(permissions);
     }
 
-    @PostMapping("/get/menus")
+ /*   @PostMapping("/get/menus")
     @RequiresAuthentication
     public Result getUserPermissions(@RequestBody JSONObject requestJson) {
         String userId = requestJson.getString("userId");
         List<String> permissions = userService.getMenus();
         return Result.succ(permissions);
-    }
+    }*/
 }

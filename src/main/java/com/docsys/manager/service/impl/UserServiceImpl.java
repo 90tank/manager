@@ -4,6 +4,8 @@ package com.docsys.manager.service.impl;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.docsys.manager.dao.UserPermissionMapper;
+import com.docsys.manager.entity.Permission;
 import com.docsys.manager.entity.User;
 import com.docsys.manager.mapper.UserMapper;
 import com.docsys.manager.service.UserService;
@@ -18,6 +20,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    UserPermissionMapper userPermissionMapper;
 
     @Override
     public User getUserByPass(String userName, String password) {
@@ -89,14 +94,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<String> getPermissions() {
-        // todo
-        return null;
+    public List<Permission> getPermissions(int userIdPk) {
+        List<Permission> permissions = userPermissionMapper.getPermissionsByUserId(userIdPk);
+        return permissions;
     }
 
-    @Override
-    public List<String> getMenuss() {
-        // todo
-        return null;
-    }
+
+
+
 }

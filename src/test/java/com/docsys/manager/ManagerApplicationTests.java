@@ -1,5 +1,6 @@
 package com.docsys.manager;
 
+import com.docsys.manager.entity.Permission;
 import com.docsys.manager.entity.User;
 import com.docsys.manager.service.UserService;
 import org.junit.Test;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -40,4 +42,11 @@ public class ManagerApplicationTests {
         System.out.println(users.get(0));
     }
 
+
+    @Test
+    public void test_permssion(){
+        int userId = 1;
+        List<Permission> permissions =  userService.getPermissions(userId);
+        System.out.println(permissions.toString());
+    }
 }

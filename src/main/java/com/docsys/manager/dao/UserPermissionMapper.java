@@ -1,11 +1,14 @@
 package com.docsys.manager.dao;
 
+import com.docsys.manager.entity.Permission;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Mapper
+@Component
 public interface UserPermissionMapper {
-    List<String>  getPermissionsByUserId(int id);
-    List<String>  getMenusByUserId(int id);
+    List<Permission>  getPermissionsByUserId(@Param("userId") int userId);
 }

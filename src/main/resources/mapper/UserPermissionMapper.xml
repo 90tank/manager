@@ -1,9 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.docsys.manager.dao.CompanyMapper">
+<mapper namespace="com.docsys.manager.dao.UserPermissionMapper">
 
-    <select id = "getPermissionsByUserId" resultType="java.util.List">
--- 	  	 	 todo 写一个联合查询
+    <resultMap type="com.docsys.manager.entity.Permission" id="permissionMap">
+        <result column="permissionid" property="permissionId"/>
+        <result column="permission" property="permissionName"/>
+        <result column="perCode" property="permissionCode"/>
+        <result column="menuname" property="menuName"/>
+        <result column="menucode" property="menuCode"/>
+    </resultMap>
+
+    <select id = "getPermissionsByUserId" parameterType="int" resultMap="permissionMap" >
+        SELECT
+            p.permission_id as permissionid,
+            p.permission_name as permission,
+            p.permission_code as perCode,
+            p.menu_name as menuname,
+            p.menu_code as menucode
+        FROM
+            t_sys_user_group_map ug
+        LEFT JOIN  t_sys_role_group_map rg ON ug.group_id = rg.group_id
+        LEFT JOIN t_sys_role r ON  r.role_id = rg.role_id
+        LEFT JOIN t_sys_role_permission_map rp ON r.role_id = rp.role_id
+        LEFT JOIN t_sys_permission p ON p.permission_id = rp.permission_id
+
+       WHERE ug.user_id = #{userId} ;
     </select>
 
     <select id = "getMenusByUserId" resultType="java.util.List">

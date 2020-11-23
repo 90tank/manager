@@ -1,5 +1,6 @@
 package com.docsys.manager.service;
 
+import com.docsys.manager.entity.Permission;
 import com.docsys.manager.entity.User;
 
 import java.util.List;
@@ -21,7 +22,6 @@ public interface  UserService {
 
     List<User> listUsers();
 
-    List<String> getPermissions();
+    List<Permission> getPermissions(int userIdPk);
 
-    List<String> getMenuss();
 }
