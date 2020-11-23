@@ -90,7 +90,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<String> getPermissions() {
-        // select form
+        // todo
+        return null;
+    }
+
+    @Override
+    public List<String> getMenuss() {
+        // todo
         return null;
     }
 }

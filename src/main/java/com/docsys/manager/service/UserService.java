@@ -22,4 +22,6 @@ public interface  UserService {
     List<User> listUsers();
 
     List<String> getPermissions();
+
+    List<String> getMenuss();
 }
