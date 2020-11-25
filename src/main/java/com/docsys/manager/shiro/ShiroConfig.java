@@ -57,7 +57,13 @@ public class ShiroConfig {
         Map<String,String> filterRuleMap = new HashMap<>();
         // 所有请求通过我们自己的JWT Filter
 
-        filterRuleMap.put("/login", "anon");
+        filterRuleMap.put("/swagger-ui.html", "anon");
+        filterRuleMap.put("/swagger-resources", "anon");
+        filterRuleMap.put("/swagger-resources/**", "anon");
+        filterRuleMap.put("/v2/api-docs", "anon");
+        filterRuleMap.put("/webjars/springfox-swagger-ui/**", "anon");
+
+        filterRuleMap.put("/login/get/token", "anon");
         filterRuleMap.put("/unauthorized", "anon");
         filterRuleMap.put("/logout", "logout");
         filterRuleMap.put("/**", "authc"); // 配置所有的请求都要经过鉴权  （todo: 测试加上这个，是不是testdemo 就不用添加@RequiresAuthentication注解）
