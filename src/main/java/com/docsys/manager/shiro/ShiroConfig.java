@@ -57,6 +57,12 @@ public class ShiroConfig {
         Map<String,String> filterRuleMap = new HashMap<>();
         // 所有请求通过我们自己的JWT Filter
 
+        filterRuleMap.put("/swagger-ui.html", "anon");
+        filterRuleMap.put("/swagger-resources", "anon");
+        filterRuleMap.put("/swagger-resources/**", "anon");
+        filterRuleMap.put("/v2/api-docs", "anon");
+        filterRuleMap.put("/webjars/springfox-swagger-ui/**", "anon");
+
         filterRuleMap.put("/login", "anon");
         filterRuleMap.put("/unauthorized", "anon");
         filterRuleMap.put("/logout", "logout");
