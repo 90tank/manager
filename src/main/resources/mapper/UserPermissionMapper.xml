@@ -10,7 +10,7 @@
         <result column="menucode" property="menuCode"/>
     </resultMap>
 
-    <!--修改点： 这里用JOIN 比较合适 因为要保证两边都有才好 -->
+    <!--修改点： 这里用JOIN 比较合适 因为要保证两边都有才好 SELECT DISTINCT -->
     <select id = "getPermissionsByUserId" parameterType="int" resultMap="permissionMap" >
         SELECT
             p.permission_id as permissionid,
